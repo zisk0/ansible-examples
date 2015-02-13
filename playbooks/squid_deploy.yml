@@ -1,0 +1,8 @@
+---
+- hosts: squid
+  vars_files:
+    - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
+
+  roles: 
+    - squid
+    - php

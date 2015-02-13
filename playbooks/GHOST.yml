@@ -1,56 +1,16 @@
-- hosts: brichardi
 
+- hosts: sana5
   vars_files:
-    - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
-
+    #- /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
+    #- /home/flopez/ansible/host_vars/{{inventory_hostname}}
   tasks:
-    - name: check for gcc
-      stat: path=/usr/bin/gcc
-      register: gcc
-      sudo: yes
+    - name: Create dvaca user 
+      user: name=dvaca comment="Daniel Vaca" shell=/bin/bash  groups=sudo update_password=on_create state=present 
 
-    - name: copy the GHOST script to the machine
-      copy: src=../files/vuln_checks/GHOST.c dest=/tmp/GHOST.c
-      when: gcc.stat.exists
-      sudo: yes
 
-    - name: compile it
-      raw: gcc /tmp/GHOST.c -o /tmp/GHOST
-      when: gcc.stat.exists
-      sudo: yes
+    - name: Create framirez user 
+      user: name=framirez comment="Fernando Ramirez" shell=/bin/bash  groups=sudo update_password=on_create state=present 
 
-    - name: run it!
-      raw: /tmp/GHOST
-      register: ghost
-      when: gcc.stat.exists
-      sudo: yes
 
-    - name: show me the results
-      debug: var=ghost.stdout_lines[0]
-      when: gcc.stat.exists
-      sudo: yes
-
-    - name: update apt
-      apt: update_cache=yes
-      when: gcc.stat.exists
-      sudo: yes
-
-    - name: update glibc
-      apt: name=libc6 state=latest
-      when: gcc.stat.exists
-      sudo: yes
-
-    - name: run it again!
-      raw: /tmp/GHOST
-      register: ghost
-      when: gcc.stat.exists
-      sudo: yes
-
-    - name: show me the new results
-      debug: var=ghost.stdout_lines[0]
-      when: gcc.stat.exists
-      sudo: yes
-
-    - name: no gcc
-      debug: msg="no gcc found"
-      when: not gcc.stat.exists
+    - name: Create backuo user 
+      user: name=backuo comment="Backuo McBack" shell=/bin/bash  update_password=on_create state=present 

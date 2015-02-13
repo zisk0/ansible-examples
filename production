@@ -27,7 +27,7 @@ paperboy
 csirt
 sana
 omicron
-udyat
+udya
 
 [brichardi]
 persia
@@ -52,6 +52,10 @@ capricornio
 ovh
 heztner
 
+[chile]
+cbchile
+choche
+proxychile3
 
 [physical]
 duboisi
@@ -130,6 +134,11 @@ rhodos
 [crawler]
 jhene
 lana
+
+[squid]
+cbchile
+choche
+proxychile3
 
 ## Hosts by project ########################
 

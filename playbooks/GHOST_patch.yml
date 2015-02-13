@@ -1,5 +1,5 @@
 ---
-- hosts: development
+- hosts: physical
 
   vars_files:
       #- /home/flopez/ansible_playbooks/vars/passwords.yml

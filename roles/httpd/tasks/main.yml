@@ -1,0 +1,20 @@
+---
+   - name: Is httpd present?
+     yum:  name=httpd state=present
+     register: httpd_is_present
+     sudo: yes
+
+   - name: Install the latest httpd package
+     yum:  name=httpd state=latest
+     sudo: yes
+     when: httpd_is_present|failed
+
+   - name: Upload config file
+     copy: src=/files/*.conf dest=/etc/httpd/conf.d/ owner=root group=root mode=644 backup=yes
+     sudo: yes
+     when: httpd_is_present|failed
+
+   - name: Restart Squid
+     service: name=httpd state=restarted
+     sudo: yes
+     when: httpd_is_present|failed
