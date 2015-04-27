@@ -1,0 +1,8 @@
+---
+- hosts: omicron
+  vars_files:
+    - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
+#    - /home/flopez/ansible/roles/squid/vars/main.yml
+
+  roles: 
+    - django

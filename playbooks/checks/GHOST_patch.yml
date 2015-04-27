@@ -1,12 +1,12 @@
 ---
-- hosts: physical
+- hosts: bemba
 
   vars_files:
       #- /home/flopez/ansible_playbooks/vars/passwords.yml
       - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
 
   vars:
-      #ansible_sudo_pass: "{{ lookup('file', '/home/flopez/ansible_playbooks/host_vars/passwords/' + inventory_hostname) }}"
+      ansible_sudo_pass: "{{ lookup('file', '/home/flopez/ansible_playbooks/host_vars/passwords/' + inventory_hostname) }}"
       # with_password: "{{ lookup('password', '/home/flopez/ansible_playbooks/host_vars/passwords/' + inventory_hostname) }}"  
 
   tasks:   

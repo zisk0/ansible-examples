@@ -1,0 +1,21 @@
+---
+- hosts: 192.168.105.154
+  tasks:
+  - name: quien soy
+    command: whoami
+    sudo: no
+  - name: donde estoy
+    command: pwd
+    sudo: no
+#  - name: copiar archivo
+#    template: src=/home/bmunoz/tareas/ansible_pruebas/confi_files/apache2.conf dest=/tmp/file.conf owner=operador group=operador mode=0644
+#  - name: crear linea
+#    lineinfile: dest=/tmp/selinux.txt create=yes regexp="^no" line="cacahuetes" owner=operador group=operador mode=0644
+  - name: ensure apache is at the lastest version
+    apt: name=apache2 update_cache=yes state=latest force=yes
+    sudo: yes
+#  handlers:
+#    - name: reiniciar apache
+#      service:
+#        name: apache2
+#        state: restarted

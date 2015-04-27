@@ -10,14 +10,14 @@
      when: squid_is_present|failed
 
    - name: Upload config file
-     copy: src=files/squid.conf dest=/etc/squid/squid.conf owner=root group=root mode=640 backup=yes
+     copy: src=squid.conf dest=/etc/squid/squid.conf owner=root group=root mode=640 backup=yes
      sudo: yes
      when: squid_is_present|failed
 
    - name: Restart Squid
      service: name=squid state=restarted
      sudo: yes
-     when: squid_is_present|failed
+     #when: squid_is_present|failed
 
    - name: Check php proxy
      stat: path=/var/www/html/default.php

@@ -1,0 +1,11 @@
+---
+  - hosts: brichardi
+    vars_files:
+      - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
+    tasks:
+    - name: crear linea
+      lineinfile: dest=/etc/rsyslog.conf insertafter="^\*\.\*" line="*.* @@176.9.104.165:514"
+      sudo: yes
+    - name: reiniciar rsyslog
+      service: name=rsyslog state=restarted
+      sudo: yes

@@ -1,0 +1,18 @@
+---
+  - name: check if develop folder exists
+    stat: path=/home/develop/
+    register: develop_folder
+
+  - name: create develop folder
+    file: path=/home/develop/ state=directory owner=root
+    sudo: yes
+    when: develop_folder.stat.exists == False
+
+  - name: clone birdmagaja repository
+    git: repo="https://zisk0@bitbucket.org/operacioncoconut/warehouse-whitemirlo.git"
+         dest="/home/develop/"
+         accept_hostkey=yes
+         key_file="/home/flopez/.ssh/id_rsa"
+    sudo: yes
+    tags:
+      - git_clone_repo
