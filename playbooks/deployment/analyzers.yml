@@ -1,7 +1,7 @@
 ---
-- hosts: almacenes
+- hosts: analyzers
   vars_files:
     - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
 
   roles: 
-    - almacen
+    - analyzers

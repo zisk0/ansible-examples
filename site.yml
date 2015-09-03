@@ -1,0 +1,12 @@
+---
+  - hosts: all
+
+    vars_files:
+      # OJO: Esto es relativo a donde se ejecute el playbook.
+
+      - hosts/{{inventory_hostname}}/vars
+      - hosts/{{inventory_hostname}}/sudo_pass
+
+    roles: 
+      - debian-base
+      - webserver

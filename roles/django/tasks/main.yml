@@ -1,5 +1,5 @@
 ---
   # - include: python.yml
-  - include: virtualenv.yml
+  # include: virtualenv.yml
   # - include: git.yml
-  # - include: deploy_almacen.yml
+   - include: deploy_almacen.yml

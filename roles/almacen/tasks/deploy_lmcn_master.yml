@@ -1,0 +1,23 @@
+---
+  - name: Install Java openjdk-7-jre
+    apt: name=openjdk-7-jre state=present
+    sudo: yes
+
+  - name: create develop folder
+    file: path=/home/develop/ state=directory owner=root
+    sudo: yes
+    when: develop_folder.stat.exists == False
+
+  # - name: clone birdmagaja repository
+  #   git: repo="https://zisk0@bitbucket.org/operacioncoconut/warehouse-whitemirlo.git"
+  #        dest="/home/develop/"
+  #        accept_hostkey=yes
+  #        key_file="/home/flopez/.ssh/id_rsa"
+  #   sudo: yes
+    # tags:
+    #   - git_clone_repo
+  - name: create syncro user
+    user: name=syncro createhome=no password=$6$jTgt/SprwYFAe$o51hIDM9M7HcCc3e75FTonaI5kXmiq.V/3QMPGwGuNL41cikldWBQ40ZnRS8uxKL5l52oq7.YGQc38C7URk.F/ shell=/bin/bash state=present 
+    sudo: yes
+
+  - name: install keychain for backup

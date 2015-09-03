@@ -1,0 +1,9 @@
+---
+  - hosts: all
+
+    vars_files:
+      - /home/flopez/ansible/hosts/{{inventory_hostname}}/vars
+      - /home/flopez/ansible/hosts/{{inventory_hostname}}/sudo_pass
+
+    roles: 
+      - debian-base

@@ -1,0 +1,3 @@
+---
+  - include: base-soft.yml
+  - include: nrpe-config.yml

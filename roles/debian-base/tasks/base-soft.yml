@@ -1,0 +1,10 @@
+---
+  - name: Install base tools
+    sudo: yes
+    apt: state=present pkg={{ item }} update_cache=yes
+    with_items:
+      - vim
+      - screen
+      - tcpdump
+    tags:
+      - base-install

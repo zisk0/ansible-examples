@@ -1,2 +1,4 @@
-!/host_vars
-host_vars/passwords
+!/hosts
+!/hosts/*
+hosts/*/sudo_pass
+hosts_vars_dep/

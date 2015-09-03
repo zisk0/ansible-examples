@@ -1,0 +1,108 @@
+
+
+
+/var/lib/elasticsearch/elasticsearch/nodes/0/indices/.kibana/0/index/
+
+java -cp lucene-core*.jar -ea:org.apache.lucene... org.apache.lucene.index.CheckIndex /var/lib/elasticsearch/elasticsearch/nodes/0/indices/.kibana/0/index/
+
+
+/var/lib/elasticsearch/elasticsearch/nodes/0/indices/.kibana/0/index/
+
+
+SELECT COUNT('*') FROM (
+   SELECT DISTINCT   `frontend_apk`.`id` AS Col1, 
+                     `frontend_apk`.`md5` AS Col2, 
+                     `frontend_apk`.`sha1` AS Col3, 
+                     `frontend_apk`.`sha256` AS Col4, 
+                     `frontend_apk`.`app` AS Col5, 
+                     `frontend_apk`.`package_name` AS Col6, 
+                     `frontend_apk`.`company` AS Col7, 
+                     `frontend_apk`.`displayed_version` AS Col8, 
+                     `frontend_apk`.`image` AS Col9, 
+                     `frontend_apk`.`size` AS Col10, 
+                     `frontend_apk`.`created_on` AS Col11, 
+                     `frontend_apk`.`stored` AS Col12, 
+                     `frontend_apk`.`analyzed` AS Col13, 
+                     `frontend_apk`.`is_apk` AS Col14, `frontend_apk`.`trusted` AS Col15, `frontend_apk`.`detected` AS Col16, `frontend_apk`.`rating` AS Col17, `frontend_apk`.`corrupted` AS Col18, `frontend_apk`.`hidden` AS Col19, `frontend_apk`.`repo` AS Col20 FROM `frontend_apk` 
+            WHERE (
+                     `frontend_apk`.`is_apk` = 1 AND 
+                     `frontend_apk`.`hidden` = 0 AND 
+                     `frontend_apk`.`stored` = 1 AND 
+                     `frontend_apk`.`created_on` >= '1970-01-01 00:00:00' AND 
+                     (
+                        `frontend_apk`.`app` LIKE '%cajamar%' OR 
+                        `frontend_apk`.`company` LIKE '%cajamar%' OR 
+                        `frontend_apk`.`package_name` LIKE '%cajamar%'
+                     )
+
+                  )
+
+
+)
+
+
+
+CREATE FULLTEXT INDEX textdex ON frontend_apk app company package_name ALGORITHM=INPLACE;
+
+33,61
+
+
+
+
+Cuando se hace una busqueda sin tags ni nada, se mete un like "flotante" que jode los index:
+
+SELECT COUNT FROM (
+SELECT DISTINCT `frontend_apk`.`id` AS Col1, 
+`frontend_apk`.`md5` AS Col2, 
+`frontend_apk`.`sha1` AS Col3, 
+`frontend_apk`.`sha256` AS Col4, 
+`frontend_apk`.`app` AS Col5, 
+`frontend_apk`.`package_name` AS Col6, 
+`frontend_apk`.`company` AS Col7, 
+`frontend_apk`.`displayed_version` AS Col8, 
+`frontend_apk`.`image` AS Col9, 
+`frontend_apk`.`size` AS Col10, 
+`frontend_apk`.`created_on` AS Col11, 
+`frontend_apk`.`stored` AS Col12, 
+`frontend_apk`.`analyzed` AS Col13, 
+`frontend_apk`.`is_apk` AS Col14, 
+`frontend_apk`.`trusted` AS Col15, 
+`frontend_apk`.`detected` AS Col16, 
+`frontend_apk`.`rating` AS Col17, 
+`frontend_apk`.`corrupted` AS Col18, 
+`frontend_apk`.`hidden` AS Col19, 
+`frontend_apk`.`repo` AS Col20
+
+FROM `frontend_apk` WHERE (
+`frontend_apk`.`is_apk` = 1 AND 
+                     `frontend_apk`.`hidden` = 0 AND 
+                     `frontend_apk`.`stored` = 1 AND 
+                     `frontend_apk`.`created_on` >= '1970-01-01 00:00:00' AND 
+                     (
+                        `frontend_apk`.`app` LIKE '%cajamar%' OR 
+                        `frontend_apk`.`company` LIKE '%cajamar%' OR 
+                        `frontend_apk`.`package_name` LIKE '%cajamar%'
+                     )
+         )
+)
+En concreto es el último AND. Como los indices se hacen por la cadena entera, tiene que buscar en cada uno, haciendo que el indice no sirva para nada.
+
+
+
+
+
+
+#
+# Server SSL certificate. You can generate a self-signed certificate using 
+# a command like:
+#
+# openssl req -x509 -newkey rsa:2048 -keyout /etc/proftp/ssl/proftpd.key -out /etc/proftp/ssl/proftpd.crt -nodes -days 365
+#
+# The proftpd.key file must be readable by root only. The other file can be
+# readable by anyone.
+#
+# chmod 0600 /etc/proftp/ssl/proftpd.key 
+# chmod 0640 /etc/proftp/ssl//proftpd.key
+
+
+1:15

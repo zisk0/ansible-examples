@@ -1,0 +1,35 @@
+---
+  - hosts: cuckoo
+    vars_files:
+    - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
+
+    tasks:
+    - name: Is openvpn installed?
+      apt:  name=openvpn state=present
+      register: openvpn_is_installed
+      sudo: yes
+  
+    - name: Install the latest openvpn package
+      yum:  name=openvpn state=latest update_cache=yes
+      sudo: yes
+      when: openvpn_is_installed|failed
+  
+    # - name: Upload config file
+    #   copy: src=squid.conf dest=/etc/squid/squid.conf owner=root group=root mode=640 backup=yes
+    #   sudo: yes
+    #   when: squid_is_present|failed
+  
+    - name: restart openvpn
+      service: name=openvpn state=restarted
+      sudo: yes
+      when: openvpn_is_installed|failed
+  
+    # - name: Check php proxy
+    #   stat: path=/var/www/html/default.php
+    #   register: php_proxy
+    #   sudo: yes
+  
+    # - name: Upload php proxy
+    #   copy: src=default.php dest=/var/www/html/ owner=root group=root mode=640 backup=yes
+    #   sudo: yes
+    #   when: php_proxy.stat.exists == False
