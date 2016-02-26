@@ -1,9 +1,0 @@
----
-- hosts: proxychile3
-  vars_files:
-    - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
-    - /home/flopez/ansible/roles/squid/vars/main.yml
-
-  roles: 
-    - squid
-    - php

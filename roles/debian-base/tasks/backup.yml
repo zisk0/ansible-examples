@@ -1,0 +1,38 @@
+---
+  - name: check requirements for backup
+    sudo: yes
+    apt: state=present pkg={{ item }} update_cache=no
+    with_items:
+      - rsync
+    tags:
+      - backup-install
+      - backup-rsync
+
+  - name: add backup user
+    # Password generated with command 'python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"'
+    sudo: yes
+    user: name=backuo state=present comment="Backuo McBack" update_password=always password='$6$rounds=100000$iTh.5U1E4bKaO/un$dSumIrdJnqKg.p484KElfTR9JaE7jzfbLLi8k0ogFHRopPj.C0n.F/i.z.v2xx32irJ9nN0KDGH1DbNFzLByY/'
+    tags:
+      - backup-install
+      - backup-user
+
+  - name: upload backup script
+    sudo: yes
+    copy: src=/home/flopez/ansible/hosts/{{ inventory_hostname }}/templates/backup.sh dest=/home/backuo/backup.sh owner=root group=root mode=755 backup=yes
+    tags:
+      - backup-install
+      - backup-script
+
+  - name: add cron task for backup
+    sudo: yes
+    cron: name="Backup" minute="0" hour="1" job="/bin/bash /home/backuo/backup.sh" state=present
+    tags:
+      - backup-install
+      - backup-cron
+
+  - name: test backup
+    sudo: yes
+    shell: "'/home/backuo/backup.sh' executable='/bin/bash'"
+    tags:
+      - backup-install
+      - backup-test

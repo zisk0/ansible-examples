@@ -1,0 +1,4 @@
+---
+"nagios":
+  "server-name": "eris"
+  "server": "87.216.208.128"

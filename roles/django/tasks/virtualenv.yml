@@ -9,7 +9,8 @@
       - virtualenv
       - install_virtualenv
 
-  - name: add wrappers config in .bashrc
+  - name: add wrappers config in .bashrc sudo no
+    sudo: no 
     lineinfile:
       dest: ~/.bashrc
       insertafter: EOF
@@ -25,7 +26,7 @@
       - config_virtualenvwrapper
 
 
-  - name: add wrappers config in .bashrc for root 
+  - name: add wrappers config in .bashrc for root sudo yes
     sudo: yes
     lineinfile:
       dest: ~/.bashrc
@@ -41,7 +42,3 @@
       - install_virtualenv
       - config_virtualenvwrapper
 
-
-echo "export WORKON_HOME=/home/develop/.virtualenvs" >> ~/.bashrc && \
-echo "export PROJECT_HOME=/home/develop" >> ~/.bashrc && \
-echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc

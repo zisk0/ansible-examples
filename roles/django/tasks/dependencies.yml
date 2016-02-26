@@ -1,0 +1,12 @@
+---
+   -  name: install django dependencies
+      apt: name={{item}} state=present
+      sudo: yes
+      with_items:
+         - libssl-dev
+         - libmysqlclient-dev
+         - python-mysqldb
+         - libapache2-mod-wsgi
+      tags: 
+         - django-dependencies
+

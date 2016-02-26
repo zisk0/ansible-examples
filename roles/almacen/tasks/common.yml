@@ -1,0 +1,20 @@
+---
+  - name: check if develop folder exists
+    stat: path=/home/develop/
+    register: develop_folder
+
+  - name: create develop folder
+    file: path=/home/develop/ state=directory owner=root
+    sudo: yes
+    when: develop_folder.stat.exists == False
+
+  - name: create syncro user
+    user: name=syncro createhome=no password=$6$jTgt/SprwYFAe$o51hIDM9M7HcCc3e75FTonaI5kXmiq.V/3QMPGwGuNL41cikldWBQ40ZnRS8uxKL5l52oq7.YGQc38C7URk.F/ shell=/bin/bash state=present 
+    sudo: yes
+
+  - name: install git
+    apt: package=git state=present
+    sudo: yes
+    tags:
+      - install_git
+

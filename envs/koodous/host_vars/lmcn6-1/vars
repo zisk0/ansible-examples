@@ -1,0 +1,4 @@
+---
+almacen:
+  role: master
+  servername: "lmcn6.koodous.com"

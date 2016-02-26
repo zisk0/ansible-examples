@@ -1,0 +1,11 @@
+---
+  - name: installing basic packages
+    sudo: yes
+    apt: state=present pkg={{ item }} update_cache=yes
+    with_items:
+      - vim
+      - screen
+      - tcpdump
+      - htop
+    tags:
+      - base-install

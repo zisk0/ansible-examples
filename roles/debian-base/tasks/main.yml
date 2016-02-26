@@ -1,3 +1,5 @@
 ---
-  - include: base-soft.yml
-  - include: nrpe-config.yml
+
+  - include: utils.yml
+# - include: backup.yml
+  - include: monitoring.yml

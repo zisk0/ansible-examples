@@ -1,0 +1,16 @@
+---
+  - name: check if develop folder exists
+    stat: path=/home/develop/
+    register: develop_folder
+
+  - name: create develop folder
+    file: path=/home/develop/ state=directory owner=root
+    become: yes
+    when: develop_folder.stat.exists == False
+
+  - name: install git
+    apt: package=git state=present
+    become: yes
+    tags:
+      - install_git
+

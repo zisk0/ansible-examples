@@ -1,0 +1,2 @@
+---
+nagios_allowed_host: '192.168.210.10'

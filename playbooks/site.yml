@@ -1,9 +1,0 @@
----
-  - hosts: koodous-mon
-
-    vars_files:
-      - /home/flopez/ansible/host_vars/passwords/{{inventory_hostname}}
-      - /home/flopez/ansible/host_vars/{{inventory_hostname}}
-
-    roles:
-      - common

@@ -1,0 +1,5 @@
+---
+dependencies:
+  - { role: debian-base }
+  - { role: apache2 }
+  - { role: django }

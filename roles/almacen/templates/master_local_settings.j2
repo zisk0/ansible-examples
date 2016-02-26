@@ -1,0 +1,95 @@
+from django.http import UnreadablePostError
+def skip_unreadable_post(record):
+    if record.exc_info:
+        exc_type, exc_value = record.exc_info[:2]
+        if isinstance(exc_value, UnreadablePostError):
+            return False
+    return True
+
+
+SECRET = 'miraalcielopunkymiraalcielopunky'     # Clave de cifrado
+PATH_TEMP = '/tmp'
+PATH_ALMACEN = '/home/develop/almacen'
+PATH_IV = "/home/develop/secret/"
+
+BLOCKSIZE = 65536
+APK_MAX_SIZE = 256000000 #256MB
+WM_URL = "https://koodous.com/"
+WM_USER = "dispatcher"
+WM_PASS = "dispatcher"
+ADMINS = (
+    ('Fernando', 'framirez@hispasec.com'),
+    ('Daniee', 'dvaca@hispasec.com'),
+    ('Pako', 'flopez@hispasec.com')
+)
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+SERVER_EMAIL = "info@koodous.com"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "info@koodous.com"
+EMAIL_HOST_PASSWORD = "ohG4iBSd\'m-Um\'9\\"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_FROM = "Koodous.com <no-reply@koodous.com>"
+DEFAULT_FROM_EMAIL = "Koodous.com <no-reply@koodous.com>"
+
+
+HOSTNAME = "{{ almacen.servername }}" 
+TOKEN = "37d4950478c6861611a0459db50d09521253bda8"
+HEADERS = {
+      "Authorization": "Token %s" % TOKEN
+   }
+API_VT = "907143dc6cad04b946ed392fdc69bc824bb2cd04033446a8cddddb6e01349cec"
+PROCESS_APKS = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'filters': {
+        'skip_unreadable_posts': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': skip_unreadable_post,
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+       }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'filters': ['skip_unreadable_posts'],
+            'propagate': False,
+        },
+        'koodous': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+        }
+    }
+}

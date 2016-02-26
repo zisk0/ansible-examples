@@ -1,4 +1,4 @@
 ---
-- name: Restart NRPE
+- name: restart nrpe
   sudo: yes
   action: service enabled=yes state=restarted name=nagios-nrpe-server

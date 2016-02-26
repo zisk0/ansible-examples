@@ -1,0 +1,3 @@
+mysql:
+  role: slave
+  host_id: 3

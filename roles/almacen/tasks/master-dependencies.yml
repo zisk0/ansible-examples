@@ -1,0 +1,4 @@
+---
+  - name: Install Java openjdk-7-jre
+    apt: name=openjdk-7-jre state=present
+    become: yes

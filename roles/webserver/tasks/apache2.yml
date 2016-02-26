@@ -1,5 +1,0 @@
----
-   - name: Install the latest apache2 package
-     apt:  name=apache2 state=present update_cache=yes
-     sudo: yes
-     tags: apache2-install

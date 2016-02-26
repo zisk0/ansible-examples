@@ -1,0 +1,8 @@
+---
+
+  - include: master-dependencies.yml
+  - include: master-deployment.yml
+  - include: master-androguard.yml
+  - include: master-apache.yml
+
+

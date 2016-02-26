@@ -19,7 +19,7 @@
   sudo: yes
   template: src=nagios/nrpe.cfg dest=/etc/nagios/nrpe.cfg owner=root group=root mode=0644
   notify:
-    - Restart NRPE
+    - restart nrpe
   tags:
     - nagios-config
 
