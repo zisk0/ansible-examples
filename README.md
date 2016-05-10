@@ -9,9 +9,9 @@ Para probarlos:
 
 Para ejecutarlo:
 
-"""
+```
 ansible-playbook -i inventory siteX.yml
-"""
+```
 
 Donde X es el playbook que se quiera ejecutar.
 
