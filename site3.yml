@@ -2,6 +2,13 @@
   # Deployment completo de una aplicación Django con Apache2 y virtualenv.
   # Este play es para sistemas Debian/Ubuntu y Apache 2.4.
 
+  # Estado final:
+  # - Apache2 instalado.
+  # - Escucha en el puerto 80 con el ServerName configurado en host_vars
+  # - Django instalado con sus dependencias.
+  # - Aplicación web "pools" instalada en /home/develop/pools.
+  # - Virtualenv para la aplicación instalado en /home/develop/.virtualenvs.
+
   - name: Depliegue de la aplicación pools con Django y Apache2.
     hosts: webservers
 

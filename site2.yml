@@ -1,9 +1,13 @@
 ---
   # Instalar Apache2, preparar para Django y subir una configuración usando el motor de plantillas jinja2.
   # La plantilla usada está en templates/00-pools-basic.conf.j2
-  # Este play es para sistemas Debian/Ubuntu y Apache 2.4.
+  # Este play es para sistemas Debian/Ubuntu con Apache 2.4.
+  
+  # Estado final:
+  # - Apache2 instalado.
+  # - Escucha en el puerto 80 con el ServerName configurado en host_vars
 
-  - name: Instalación de Apache2 y configuración de VirtualHost.
+  - name: Instalación de Apache2 y configuración de VirtualHost
     hosts: webservers
 
     tasks:
