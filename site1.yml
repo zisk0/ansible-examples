@@ -1,0 +1,24 @@
+---
+  # Este play ejecuta un solo task que llama al módulo apt e instala vim
+  # si no se encuentra ya instalado.
+  # Este play es para sistemas Debian/Ubuntu.
+
+
+  - name: Play de ejemplo
+    hosts: webservers
+
+    tasks:
+      # Equivale al comando: apt-get update && apt-get install vim
+      - name: Instalar vim
+        apt: pkg=vim state=present update_cache=yes
+
+        # Si accedéis como usuario sin privilegios, podéis escalarlos usando 
+        # la directiva "become": http://docs.ansible.com/ansible/become.html
+
+        # Se ejecutará el comando como el become_user que se haya configurado.
+        # Al ejecutar el playbook, habrá que añadir la opción "--ask-become-pass" para introducir el password.
+        # Ojo, Ansible considera que TODOS los host del grupo tendrán el mismo password. 
+        # Para una configuración de passwords más segura, podeis echarle un ojo a: 
+        # http://laboratorio.blogs.hispasec.com/2015/06/automatizacion-segura-de-sistemas-con.html
+
+        # become: yes

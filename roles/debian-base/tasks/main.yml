@@ -1,0 +1,12 @@
+---
+  - name: Instalar varios paquetes
+    apt: state=present pkg={{ item }}
+    with_items:
+      - vim
+      - screen
+      - tcpdump
+      - htop
+
+  # Con esta simple directiva podemos incluir tareas de otros ficheros.
+
+  - include: monitoring.yml

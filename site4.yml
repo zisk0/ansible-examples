@@ -1,0 +1,18 @@
+---
+  # Deployment completo de una aplicación Django con Apache2 y virtualenv.
+  # En este caso usaremos roles. 
+
+  # Este es el setup al que deberíamos llegar una vez controlemos algo más de Ansible.  
+  # Un playbook principal (normalmente se le llama main.yml o site.yml) donde solo 
+  # tenemos que cambiar los roles e includes que queramos ejecutar y los hosts sobre los
+  # que vamos a trabajar.
+
+  # Este play es para sistemas Debian/Ubuntu y Apache 2.4.
+
+  - name: Depliegue de la aplicación pools con Django y Apache2 (usando roles).
+    hosts: webservers
+
+    roles: 
+      - debian-base
+      - django
+      - apache2

@@ -1,0 +1,6 @@
+---
+# Un handler es diferente a una tarea al uso. Siempre se llama con action: <módulo> <parámetros>
+# Se llama a través del nombre, que tiene que ser el mismo a como lo llamamaos para notificarlo.
+
+- name: restart nrpe
+  action: service enabled=yes state=restarted name=nagios-nrpe-server

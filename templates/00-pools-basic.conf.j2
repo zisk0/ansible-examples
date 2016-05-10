@@ -1,0 +1,20 @@
+   <VirtualHost _default_:80>
+      ServerName {{ servername }}
+      ServerAdmin webmaster@localhost
+      DocumentRoot /home/develop/
+
+      <Directory /home/develop/>
+         Require all granted
+      </Directory>
+
+      ErrorLog ${APACHE_LOG_DIR}/pools.error.log
+      CustomLog ${APACHE_LOG_DIR}/pools.access.log combined
+
+      BrowserMatch "MSIE [2-6]" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+
+      # MSIE 7 and newer should be able to use keepalive
+      BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+   </VirtualHost>

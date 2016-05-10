@@ -1,0 +1,66 @@
+---
+
+  - name: Instalar paquetes de monitorización
+    apt: state=latest pkg={{ item }} update_cache=yes
+    with_items:
+      - nagios-nrpe-server
+      - nagios-plugins
+    tags:
+      - monitoring
+      - packages
+
+  # Subimos un script de chequeo de Nagios que tenemos hecho o hemos descargado.
+
+  - name: Subir check_mem.pl
+    copy: src=nagios/checks/check_mem.pl dest=/usr/lib/nagios/plugins/ owner=root group=root mode=0755
+    tags:
+      - monitoring
+      - config
+
+  # Aquí podemos ver el uso típico de los handlers.
+  # Un handler es una tarea que no está dentro de la secuencia de ejecución, si no que se define aparte
+  # (normalmente en la carpeta handlers) y espera a que otra tarea la llame.
+
+  # Se suele utilizar para pequeñas tareas de control. por ejemplo reiniciar un demonio o recargar su 
+  # configuración después de haberla cambiado.
+  - name: Configurar nrpe.cfg 
+    template: src=monitoring/nrpe.cfg dest=/etc/nagios/nrpe.cfg owner=root group=root mode=0644
+    notify:
+      - restart nrpe
+    tags:
+      - monitoring
+      - config
+
+  - name: Subir base.cfg para checks básicos
+    template: src=monitoring/base.cfg dest=/etc/nagios/nrpe.d/base.cfg owner=root group=root mode=0644
+    tags:
+      - config
+      - monitoring
+
+  # Las "local_action" son llamadas a módulos que se ejecutan en local. Así podemos comprobar, por 
+  # ejemplo, que ciertos ficheros de configuración existan y actuar en consecuencia. En nuestro caso 
+  # comprobamos si hemos definido chequeos de Nagios específocos para los hosts que estamos 
+  # configurando, y si es asi, los subimos.
+
+  # Hay variables especificas del propio Ansible. "ansible_hostname" es el nombre que le 
+  # hemos dado al host en el inventario.
+  # Lo que hacemos es buscar un fichero de configuración de NRPE con el nombre de la máquina.
+
+  - name: check for host specific configuration
+    local_action: "stat path=templates/monitoring/{{ ansible_hostname }}.cfg"
+    register: host_conf
+    tags:
+      - config
+      - monitoring
+
+  # Si existe, lo subimos.
+
+  - name: upload specific configuration file
+    template: src=templates/monitoring/{{ ansible_hostname }}.cfg dest=/etc/nagios/nrpe.d/{{ ansible_hostname }}.cfg owner=root group=root mode=0644
+    when: host_conf.stat.exists
+    tags:
+      - config
+      - monitoring
+      - host_config
+
+

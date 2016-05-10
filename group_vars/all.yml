@@ -1,0 +1,4 @@
+---
+"monitoring":
+  "server-name": "nagios"
+  "server": "11.22.33.44"
