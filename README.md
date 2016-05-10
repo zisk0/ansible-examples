@@ -9,8 +9,3 @@ Para probarlos:
 
 Si crees que pueden mejorar, estoy abierto a pull requests y a comentarios :) Puedes encontrarme en [@zisk0](https://www.twitter.com/zisk0 "@zisk0").
 
-¡Muchas gracias!
-
-
-
-
