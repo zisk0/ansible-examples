@@ -1,2 +1,14 @@
 ---
-  - include: apache2.yml
+  - name: Instalar apache2
+    apt:  name=apache2 state=present 
+
+  - name: Subir virtualhost
+    template: src=00-pools.conf.j2 dest=/etc/apache2/sites-available/00-pools.conf
+
+  - name: Activar modulos
+    apache2_module: name=wsgi state=present
+
+  - name: a2ensite 00-pools.conf
+    command: chdir=/etc/apache2/sites-available a2ensite 00-pools.conf creates=/etc/apache2/sites-enabled/00-pools.conf
+    notify:
+      - restart apache2

@@ -1,0 +1,131 @@
+---
+  # Deployment completo de una aplicación Django con Apache2 y virtualenv.
+  # Este play es para sistemas Debian/Ubuntu y Apache 2.4.
+
+  - name: Depliegue de la aplicación pools con Django y Apache2.
+    hosts: webservers
+
+    tasks:
+
+      # Con "item" podemos realizar iteración sobre una lista de elementos.
+      # Ejecutará la tarea por cada elemento de la lista "with_items",
+      # sustituyendo {{ item }} por el elemento.
+      # Las tareas pueden llevar asociados tags para ejecutar sólo una parte del play si es necesario.
+      # Se seleccionan al llamar a ansible playbook con la opción -t.
+
+      -  name: Instalar paquetes de Python
+         apt: name={{ item }} state=present force=yes
+         with_items:
+          - python
+          - python-pip
+          - python-dev
+         tags: 
+          - install_python
+
+      - name: Instalar dependencias de Django
+        apt: name={{item}} state=present
+        with_items:
+          - libssl-dev
+          - libmysqlclient-dev
+          - python-mysqldb
+          - libapache2-mod-wsgi
+        tags: 
+          - install_django_dep
+
+      # ¡También hay módulo para pip!
+
+      - name: Instalar virtualenv y wrappers
+        pip: name={{ item }} state=present
+        with_items:
+          - virtualenv
+          - virtualenvwrapper
+        tags:
+          - install_virtualenv
+
+      # Ojo, que esta es complicaita.
+      # Queremos añadir tres lineas a ~/.bashrc para configurar virtualenvwrapper.
+
+      # Por un lado, el módulo "lineinfile" comprueba que haya una linea específica 
+      # dentro de un fichero (~/.bashrc). De no haberla la añade donde le digamos, en este 
+      # caso al final (EOF). Reconoce la linea al buscarla usando el regexp que le indiquemos, 
+      # y de no encontrar lineas que lo satisfagan añadirá aquella definida en el parámetro "line".
+
+      # Por otro lado, volvemos a hacer uso de la iteración. En este caso, cada item es un diccionario.
+      # Por cada iteración, cambiará {{ item.regexp }} e {{ item.line }} por el valor definido en
+      # "with_items".
+
+      - name: Configurar wrappers
+        lineinfile: "dest=~/.bashrc state=present insertafter=EOF regexp={{ item.regexp }} line={{ item.line }}"
+        with_items:
+          - { regexp: '^export WORKON_HOME', line: 'export WORKON_HOME=/home/develop/.virtualenvs' }
+          - { regexp: '^export PROJECT_HOME', line: 'export PROJECT_HOME=/home/develop' }
+          - { regexp: '^source(.*)virtualenvwrapper.sh$', line: 'source /usr/local/bin/virtualenvwrapper.sh' }
+        tags:        
+          - install_virtualenv
+          - config_virtualenvwrapper
+
+      # Con la siguiente tarea subiriamos claves ssh para hacer el deployment. En nuestro caso no las
+      # necesitamos.
+
+      # - name: Subir ssh keys
+      #   copy: src=~/.ssh/{{ item }} dest=~/.ssh/ owner=root group=root mode=0600
+      #   with_items:
+      #     - deploymet_key
+      #     - deploymet_key.pub
+      #   tags:
+      #     - git_clone_repo
+
+      - name: Instalar Git
+        apt: package=git state=present force=yes
+
+      # Módulo de git. Lo usamos para clonar el repositorio.
+      # accept_hostkey=yes evita que ansible se "cuelgue" al preguntar el host remoto 
+      # si queremos añadir github.com a known_hosts.
+
+      - name: Clonar repo de pools
+        git: repo="https://github.com/betabeersMLG/djangointro.git"
+             clone=yes
+             dest="/home/develop/pools"
+             accept_hostkey=yes
+             force=yes
+        tags:
+          - git_clone_repo
+
+      - name: Asegurar que www-data es dueño de directorio
+        file: path=/home/develop owner=www-data group=www-data mode=0744 state=directory recurse=yes
+
+      # Instala requirements.txt. Fijaos que le pasamos el virtualenv. Al módulo pip lo crea y 
+      # activa.
+
+      - name: Instalar requirements.txt
+        pip: chdir=/home/develop/pools requirements=requirements.txt state=present virtualenv=/home/develop/.virtualenvs/django-betabeers
+        tags:
+          - git-clone-repo
+
+      # En caso de tener confguraciones en el local_settings.py (que no se incluye 
+      # en el repositorio) usariamos el módulo template de nuevo (o copy si no necesitamos aplicar
+      # ninguna variable).
+
+      # - name: Subir local_settings.py
+      #   template: src=local_settings.py.j2 dest=/home/develop/pools/betabeers/local_settings.py owner=root group=root mode=0644
+      #   tags:
+      #     - upload-local-settings
+
+      - name: Instalar apache2
+        apt:  name=apache2 state=present 
+
+      - name: Subir virtualhost
+        template: src=00-pools.conf.j2 dest=/etc/apache2/sites-available/00-pools.conf
+
+      - name: Activar modulos
+        apache2_module: name=wsgi state=present
+
+      # Cuando no existan módulos especificos para lo que queremos hacer, siempre podemos tirar
+      # del módulo "command", en este caso para ejecutar a2ensite.
+      # El parámetro "creates" le indica al módulo que si el fichero que se le pasa existe NO se debe ejecutar la tarea.
+
+      - name: a2ensite 00-pools.conf
+        command: chdir=/etc/apache2/sites-available a2ensite 00-pools.conf creates=/etc/apache2/sites-enabled/00-pools.conf
+
+      - name: Reiniciar apache2
+        service: name=apache2 state=restarted

@@ -1,0 +1,46 @@
+---
+  # Instalar Apache2, preparar para Django y subir una configuración usando el motor de plantillas jinja2.
+  # La plantilla usada está en templates/00-pools-basic.conf.j2
+  # Este play es para sistemas Debian/Ubuntu y Apache 2.4.
+
+  - name: Instalación de Apache2 y configuración de VirtualHost.
+    hosts: webservers
+
+    tasks:
+
+      - name: Instalar apache2
+        apt:  name=apache2 state=present update_cache=yes
+
+      # La siguiente tarea hace uso del módulo template. 
+      # Toma un fichero de plantillas jinja2 y sustituye las variables referenciadas ({{ servername }})
+      # por las definidas en los ficheros de variables en host_vars. Después sube la configuración.
+      # Encuentra automágicamente los ficheros de variables por ruta relativa al inventario.
+
+      - name: Subir virtualhost
+        template: src=00-pools-basic.conf.j2 dest=/etc/apache2/sites-available/00-pools.conf force=yes
+
+      - name: Instalar dependencias de Django
+        apt: name=libapache2-mod-wsgi state=present
+
+      # Este módulo es suficientemente autoexplicativo. Simplemente activa módulos de Apache2.
+
+      - name: Activar módulos
+        apache2_module: name=wsgi state=present
+
+      # Cuando no existan módulos especificos para lo que queremos hacer, siempre podemos tirar
+      # del módulo "command", en este caso para ejecutar a2ensite.
+      # El parámetro "creates" le indica al módulo que si el fichero que se le pasa existe NO se debe ejecutar la tarea.
+
+      - name: a2ensite 00-pools.conf
+        command: chdir=/etc/apache2/sites-available a2ensite 00-pools.conf creates=/etc/apache2/sites-enabled/00-pools.conf
+
+      - name: Crear directorio de la aplicación
+        file: path=/home/develop/ state=directory owner=www-data group=www-data mode=u+x
+
+      - name: Copiar index.html
+        command: cp /var/www/html/index.html /home/develop/ creates=/home/develop/index.html
+
+      - name: Reiniciar apache2
+        service: name=apache2 state=restarted
+
+

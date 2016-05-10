@@ -1,9 +1,0 @@
----
-
-  - include: common.yml
-
-  - include: master.yml
-    when: inventory_hostname | match(".*-1")
-
-  - include: slave.yml
-    when: inventory_hostname | match(".*-2")

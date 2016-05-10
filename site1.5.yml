@@ -1,0 +1,75 @@
+---
+  # Este es un play simple para comprobar la vulnerabilidad GHOST de glibc.
+  # http://www.cyberciti.biz/faq/cve-2015-0235-ghost-glibc-buffer-overflow-linux-test-program/
+  # Este play es para sistemas Debian/Ubuntu.
+
+  - name: Comprobar si somos vulnerables a GHOST
+    hosts: webservers
+
+    tasks:
+      # Si se ejecuta contra máquinas sin glibc, habría que ejecutar:
+      # - name: Installar gcc
+      #   apt: name=gcc state=present force=yes update_cache=yes
+
+      # El módulo stat comprueba que un fichero o carpeta exista en la máquina remota.
+      # Con la directiva "register" guardamos los resultados en una variable.
+      # Todos los módulos devuelven un json con los resultados de su ejecución en una tarea.
+      # En este caso, devuelve estos campos: http://docs.ansible.com/ansible/stat_module.html#return-values
+      - name: check for gcc
+        stat: path=/usr/bin/gcc
+        register: gcc
+
+      # Con "when" controlamos la ejecución condicional de tareas. En este caso la tarea se ejecuta
+      # si gcc.stat.exists es True.
+      # El módulo copy sube un fichero a la máquina remota. Vamos a subir una comprobación escrita en C.
+
+      - name: copy the GHOST script to the machine
+        copy: src=files/vuln_checks/GHOST.c dest=/tmp/GHOST.c
+        when: gcc.stat.exists
+
+      # Esta tarea y algunas de las siguientes se ejecuta también según la variable registrada.
+      # Se podrían incluir en un fichero aparte y hacer un include condicional.
+      # http://docs.ansible.com/ansible/playbooks_conditionals.html#applying-when-to-roles-and-includes
+      # El módulo raw manda comandos en "crudo" a la máquina. Ejecuta el comando tal y como se le pasa.
+      # Compilamos.
+
+      - name: compile it
+        raw: gcc /tmp/GHOST.c -o /tmp/GHOST
+        when: gcc.stat.exists
+
+      # En este caso se registra el resultado de ejecutar /tmp/GHOST en la máquina remota...
+
+      - name: run it!
+        raw: /tmp/GHOST
+        register: ghost
+        when: gcc.stat.exists
+
+      # ...para mostrarlo después con el módulo "debug". 
+      # El parámetro "var" es la variable que se quiere mostrar. En este caso, la primera linea de
+      # lo que la tarea anterior ha escrito en stdout ("vulnerable" o "not vulnerable").
+
+      - name: show me the results
+        debug: var=ghost.stdout_lines[0]
+        when: gcc.stat.exists 
+
+      # Todo el siguiente bloque se ejecuta cuando glibc sea vulnerable a GHOST.
+      # Notad que estamos usando el conector lógico and en la evaluación condicional.
+
+      - name: update glibc
+        apt: name=libc6 state=latest update_cache=yes
+        when: gcc.stat.exists and ghost.stdout_lines[0] == "vulnerable"
+
+      - name: run it again!
+        raw: /tmp/GHOST
+        register: ghost_after
+        when: gcc.stat.exists and ghost.stdout_lines[0] == "vulnerable"
+
+      - name: show me the new results
+        debug: var=ghost_after.stdout_lines[0]
+        when: gcc.stat.exists and ghost.stdout_lines[0] == "vulnerable"
+
+      # Esto solo muestra un mensaje en caso de que glibc no esté instalado.
+
+      - name: no gcc
+        debug: msg="no gcc found"
+        when: not gcc.stat.exists

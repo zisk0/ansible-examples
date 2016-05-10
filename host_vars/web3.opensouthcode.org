@@ -1,0 +1,2 @@
+---
+servername: "web3.opensouthcode.org"

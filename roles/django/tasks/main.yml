@@ -1,6 +1,73 @@
 ---
 
-  - include: dependencies.yml
-  - include: python.yml
-  - include: virtualenv.yml
-  # - include: deploy_almacen.yml
+  -  name: Instalar paquetes de Python
+     apt: name={{ item }} state=present force=yes
+     with_items:
+      - python
+      - python-pip
+      - python-dev
+     tags: 
+      - install_python
+
+  - name: Instalar Dependencias de Django
+    apt: name={{item}} state=present
+    with_items:
+      - libssl-dev
+      - libmysqlclient-dev
+      - python-mysqldb
+      - libapache2-mod-wsgi
+    tags: 
+      - install_django_dep
+
+  - name: Instalar virtualenv y wrappers
+    pip: name={{ item }} state=present
+    with_items:
+      - virtualenv
+      - virtualenvwrapper
+    tags:
+      - install_virtualenv
+
+  - name: Configurar wrappers
+    lineinfile: "dest=~/.bashrc state=present insertafter=EOF regexp={{ item.regexp }} line={{ item.line }}"
+    with_items:
+      - { regexp: '^export WORKON_HOME', line: 'export WORKON_HOME=/home/develop/.virtualenvs' }
+      - { regexp: '^export PROJECT_HOME', line: 'export PROJECT_HOME=/home/develop' }
+      - { regexp: '^source(.*)virtualenvwrapper.sh$', line: 'source /usr/local/bin/virtualenvwrapper.sh' }
+    tags:        
+      - install_virtualenv
+      - config_virtualenvwrapper
+
+
+  # - name: Subir ssh keys
+  #   copy: src=~/.ssh/{{ item }} dest=~/.ssh/ owner=root group=root mode=0600
+  #   become: yes
+  #   with_items:
+  #     - deploymet_key
+  #     - deploymet_key.pub
+  #   tags:
+  #     - git_clone_repo
+
+  - name: Instalar Git
+    apt: package=git state=present force=yes
+
+  - name: Clonar repo de pools
+    git: repo="https://github.com/betabeersMLG/djangointro.git"
+         clone=yes
+         dest="/home/develop/pools"
+         accept_hostkey=yes
+         force=yes
+    tags:
+      - git-clone-repo
+
+  - name: Asegurar que www-data es dueño de directorio
+    file: path=/home/develop/pools owner=www-data group=www-data mode=0744 state=directory recurse=yes
+
+  - name: Instalar requirements.txt
+    pip: chdir=/home/develop/pools requirements=requirements.txt state=present virtualenv=/home/develop/.virtualenvs/django-betabeers
+    tags:
+      - git-clone-repo
+
+  # - name: Subir local_settings.py
+  #   template: src=local_settings.py.j2 dest=/home/develop/pools/betabeers/local_settings.py owner=root group=root mode=0644
+  #   tags:
+  #     - upload-local-settings
