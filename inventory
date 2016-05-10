@@ -1,0 +1,19 @@
+
+[monitoring]
+192.168.1.10    ansible_user=flopez  ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[webservers]
+web1.opensouthcode.org
+web2.opensouthcode.org
+web3.opensouthcode.org 
+web4.opensouthcode.org 
+
+[databases:children]
+databases-masters
+databases-slaves
+
+[databases-masters]
+master[1:3].opensouthcode.org
+
+[databases-slaves]
+slaves[1:3].opensouthcode.org
